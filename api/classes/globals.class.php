@@ -7,7 +7,7 @@ class Globals
 	const DB_PUMP_ID 	= "2";
 	
 	const DB_USER_NAME 	= "root";
-	const DB_PASSWORD  	= "FuelCam@123#toor"; 
+	const DB_PASSWORD  	= "FuelCam@123s#toor"; 
 	const DB_NAME 		= "fuelcam_middleware"; 
 	const DB_HOSTNAME   = "localhost";
 	

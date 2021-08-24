@@ -1,4 +1,4 @@
 *.log
 *.jpeg
 *.mp4
-api/classes/globals.class.php
+# api/classes/globals.class.php
