@@ -134,7 +134,7 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	}
 
 
-	$printer -> text("T-ID: ".$t_id."   Nozzel:".$nozzle_no."   DSM:".$user."\n");
+	$printer -> text("T-ID: ".$t_id."   Bay:".$nozzle_no."   DSM:".$user."\n");
 	$printer -> text("Customer: ".$d_name."\n");
 	$printer -> text("--------------------------------------------\n");
 
