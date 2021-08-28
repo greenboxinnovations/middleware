@@ -20,11 +20,18 @@ import json
 import datetime
 import logging
 
+# new sync check videos photos
+import urllib3
+
 isCamUp = 1
 isStarting = 0
 isInternet = 0
 
 date_ping_file = "/opt/lampp/htdocs/middleware/logs/start_cameras.log"
+
+
+# sync_check send_vides send_photos
+http = urllib3.PoolManager()
 
 
 class Window(Frame):
@@ -78,6 +85,7 @@ def writeLog(msg):
                         datefmt='%Y-%m-%d %H:%M:%S',                                            
                         level=logging.DEBUG)
     logging.info(msg)
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 
 def kill_program_from_out():
@@ -131,7 +139,7 @@ def check_router():
 
 
 def check_internet():
-    global isInternets
+    global isInternet
     ipaddress = "8.8.8.8"    
     proc = subprocess.Popen(
         ['ping', '-c', '1', ipaddress],
@@ -289,104 +297,117 @@ def send_fcm(file_msg_name, hostname):
     
 
 
+
+
 # def ping_camera():
-#     global isCamUp
-#     hostname = "192.168.0.128"
-#     response = os.system("ping -c 1 " + hostname)
-#     # and then check the response...
-#     if response == 0:
-#         print("Network Active")
-#         isCamUp = 1
-#     else:
-#         print("Network Error")        
-#         isCamUp = 0
-#         # kill_program_from_out()
-#     root.after(5000, ping_camera)
+#     try:
+#         global isCamUp
+#         # wait time before msg is sent after ping loss
+#         # msg_diff = 1*60
+#         msg_diff = 10
+#         # wait time before msg is resent after fist msg
+#         # msg_interval = 5*60
+#         msg_interval = 45
 
-
-def ping_camera():
-    try:
-        global isCamUp
-        # wait time before msg is sent after ping loss
-        # msg_diff = 1*60
-        msg_diff = 10
-        # wait time before msg is resent after fist msg
-        # msg_interval = 5*60
-        msg_interval = 45
-
-        counter = 0
+#         counter = 0
         
-        ping_list = ["192.168.1.121", "192.168.1.120", "192.168.1.119", "192.168.1.118", "192.168.1.127", "192.168.1.126"]
+#         ping_list = ["192.168.1.121", "192.168.1.120", "192.168.1.119", "192.168.1.118", "192.168.1.127", "192.168.1.126"]
 
-        for hostname in ping_list:
-            response = os.system("ping -c 1 " + hostname)
+#         for hostname in ping_list:
+#             response = os.system("ping -c 1 " + hostname)
 
-            # file names
-            file_name = "/opt/lampp/htdocs/middleware/"+str(hostname) + ".txt"
-            file_msg_name = "/opt/lampp/htdocs/middleware/"+str(hostname) + "_msg.txt"
+#             # file names
+#             file_name = "/opt/lampp/htdocs/middleware/"+str(hostname) + ".txt"
+#             file_msg_name = "/opt/lampp/htdocs/middleware/"+str(hostname) + "_msg.txt"
 
-            # no response
-            # CAM is down
-            if response != 0:
+#             # no response
+#             # CAM is down
+#             if response != 0:
 
-                writeLog(hostname)
+#                 writeLog(hostname)
                 
-                # file exists
-                if os.path.isfile(file_name):
-                    # read and get time diff
-                    my_file = open(file_name, "r") 
-                    prev_time = float(my_file.read())
-                    sec_diff = time.time() - prev_time
+#                 # file exists
+#                 if os.path.isfile(file_name):
+#                     # read and get time diff
+#                     my_file = open(file_name, "r") 
+#                     prev_time = float(my_file.read())
+#                     sec_diff = time.time() - prev_time
 
-                    if sec_diff > msg_diff:
-                        # if msg file does not exist make one
-                        # and send msg
-                        if not os.path.exists(file_msg_name):
-                            # send_msg(file_msg_name, hostname)
-                            if(check_internet()):
-                                # send_fcm(file_msg_name, hostname)
-                                pass
-                            else:
-                                 writeLog("Cannot send notification as router down")
-                                # pass
-                # does NOT exists
-                else:
-                    # create here
-                    with open(file_name, 'a') as my_file:
-                        my_file.write(str(time.time()))
+#                     if sec_diff > msg_diff:
+#                         # if msg file does not exist make one
+#                         # and send msg
+#                         if not os.path.exists(file_msg_name):
+#                             # send_msg(file_msg_name, hostname)
+#                             if(check_internet()):
+#                                 # send_fcm(file_msg_name, hostname)
+#                                 pass
+#                             else:
+#                                  writeLog("Cannot send notification as router down")
+#                                 # pass
+#                 # does NOT exists
+#                 else:
+#                     # create here
+#                     with open(file_name, 'a') as my_file:
+#                         my_file.write(str(time.time()))
 
-            # cam is up
-            # delete files if exist
-            else:
-                counter += 1
-                if os.path.exists(file_name):
-                    os.remove(file_name)
+#             # cam is up
+#             # delete files if exist
+#             else:
+#                 counter += 1
+#                 if os.path.exists(file_name):
+#                     os.remove(file_name)
 
 
-            # check msg file
-            # if interval is greater than file delete interval
-            # delete file   
-            if os.path.isfile(file_msg_name):
-                # read and get time diff
-                my_msg_file = open(file_msg_name, "r") 
-                prev_msg_time = float(my_msg_file.read())
-                sec_msg_diff = time.time() - prev_msg_time
+#             # check msg file
+#             # if interval is greater than file delete interval
+#             # delete file   
+#             if os.path.isfile(file_msg_name):
+#                 # read and get time diff
+#                 my_msg_file = open(file_msg_name, "r") 
+#                 prev_msg_time = float(my_msg_file.read())
+#                 sec_msg_diff = time.time() - prev_msg_time
 
-                if sec_msg_diff > msg_interval:
-                    if os.path.exists(file_msg_name):
-                        os.remove(file_msg_name)
+#                 if sec_msg_diff > msg_interval:
+#                     if os.path.exists(file_msg_name):
+#                         os.remove(file_msg_name)
 
-        if counter==5:
-            isCamUp = 1
-        else:
-            isCamUp = 0
+#         if counter==5:
+#             isCamUp = 1
+#         else:
+#             isCamUp = 0
 
-        print("counter "+str(counter))
-        print("ISCAMPUP "+str(isCamUp))
-        root.after(10000, ping_camera)
-    except Exception as e:
-        print(e)
+#         print("counter "+str(counter))
+#         print("ISCAMPUP "+str(isCamUp))
+#         root.after(10000, ping_camera)
+#     except Exception as e:
+#         print(e)
     
+
+def send_photos2():
+    # writeLog("photos")
+    if check_internet():
+        url = "http://localhost/middleware/send_photos.php"
+        resp = http.request('GET', url)
+        #print(resp.data.decode('utf-8'))
+    root.after(6000, send_photos2)
+
+def send_videos2():
+    # writeLog("photos")
+    if check_internet():
+        url = "http://localhost/middleware/send_videos.php"
+        resp = http.request('GET', url)
+        #print(resp.data.decode('utf-8'))
+    root.after(6000, send_videos2)
+
+
+def sync_check2():
+    # writeLog("sync")
+    if check_internet():
+        url = "http://localhost/middleware/sync_check.php"
+        resp = http.request('GET', url)
+        #print(resp.data.decode('utf-8'))
+    root.after(5000, sync_check2)
+
 
 
 
@@ -440,14 +461,18 @@ try:
     root.after(5000, check_program_status)
 
     # sync_check()
-    root.after(10000, sync_check)
-    root.after(12000, send_photos)
-    root.after(15000, send_videos)
+    # root.after(10000, sync_check)
+    # root.after(12000, send_photos)
+    # root.after(15000, send_videos)
+
+    root.after(10000, sync_check2)
+    root.after(12000, send_photos2)
+    root.after(15000, send_videos2)
 
     root.protocol("WM_DELETE_WINDOW", disable_event)
 
     #mainloop 
     root.mainloop()
 except Exception as e:
-    writeLog(e)
+    # writeLog(e)
     raise e

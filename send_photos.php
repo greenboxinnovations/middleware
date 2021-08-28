@@ -72,7 +72,7 @@ function sendPhotos($postData,$local_install_dir){
 
 			foreach ($data as $key => $path) {
 				unlink($local_install_dir.'/'.$path);
-				//trigger_error($local_install_dir.$path);
+				//trigger_error($local_install_dir.'/'.$path);
 			}	
 
 			//foreach ($dirs as $key => $dir) {

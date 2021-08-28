@@ -2,3 +2,4 @@
 *.jpeg
 *.mp4
 api/classes/globals.class.php
+vendor/

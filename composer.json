@@ -1,0 +1,6 @@
+{
+    "require": {
+        "mike42/escpos-php": "^3.0",
+        "calcinai/php-imagick": "^0.1.2"
+    }
+}

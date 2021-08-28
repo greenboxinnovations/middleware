@@ -29,7 +29,7 @@ class item {
 
 
 require_once(dirname(__FILE__) . "/Escpos.php");
-require_once $_SERVER["DOCUMENT_ROOT"].'/query/conn.php';
+require_once $_SERVER["DOCUMENT_ROOT"].'/middleware/query/conn.php';
 
 date_default_timezone_set("Asia/Kolkata");
 $date = date('l jS F Y h:i:s A');
@@ -64,9 +64,9 @@ function httpGet($url)
     return $httpcode;
 }
  
-$d = httpGet("http://192.168.0.101/");
+//echo $d = httpGet("https://192.168.1.101/");
 
-if ($d == 200) {
+if (isHostOnline('192.168.1.101')) {
 	$p = true;
 }
 
@@ -75,7 +75,11 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	$trans_id = $_GET['trans_id'];
 	
 	/* Start the printer */
-	$logo = new EscposImage("header_bw.png");
+	$logo = new EscposImage(dirname(__FILE__) . "/header_bw.png", false);
+	//$logo = new EscposImage($_SERVER["DOCUMENT_ROOT"].'/middleware/print/header_bw.png');	
+
+	//$logo = EscposImage::load(dirname(__FILE__) . "/header_bw.png", false);
+
 	// $connector = new WindowsPrintConnector("TM-T81");
 	$connector = new NetworkPrintConnector("192.168.0.101", 9100);
 	$printer = new Escpos($connector);
@@ -89,7 +93,7 @@ if ((isset($_GET['trans_id']))&&($p)) {
 
 	/* Name of shop */
 	$printer -> selectPrintMode(Escpos::MODE_DOUBLE_WIDTH);
-	$printer -> text("Select Automobiles\n");
+	$printer -> text("MHKS, Kamptee\n");
 	$printer -> selectPrintMode();
 	$printer -> text("63/10/1 Karve Road, Pune - 411008\n");
 	$printer -> text("GST No 27ADKFS2744J1ZO\n");
@@ -144,7 +148,7 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	$printer -> setJustification(Escpos::JUSTIFY_CENTER);
 	$printer -> text($date);
 	$printer -> feed(2);
-	$printer -> text("Thank you for Visiting Select Automobiles\n");
+	$printer -> text("Thank you for Visiting MHKS Kamptee\n");
 	$printer -> feed();
 
 	/* Cut the receipt and open the cash drawer */
@@ -152,5 +156,35 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	$printer -> pulse();
 	$printer -> close();
 }
+
+
+
+function httpPing($host){
+	
+	$port = 80; 
+	$waitTimeoutInSeconds = 1; 
+	if($fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){   
+	   // It worked 
+		return true;
+	} else {
+	   // It didn't work 
+		return false;
+	} 
+	fclose($fp);	
+}
+
+function isHostOnline($host, $timeout = 1) {
+	exec("ping -c 1 " . $host, $output, $result);
+	// print_r($output);
+	if ($result == 0){
+		// echo "Ping successful!";
+		return true;
+	}	
+	else{
+		// echo "Ping unsuccessful!";	
+		return false;
+	}	
+}
+
 
 ?>

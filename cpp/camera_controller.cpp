@@ -484,7 +484,7 @@ void updateTransTime(const string file1,const string file2, const string trans_s
 	}
 }
 
-int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &tsv){
+int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &tsv, std::string date){
 	
 	Mat big_frame;
 	Mat small_frame;
@@ -494,10 +494,14 @@ int videoThread(const int cam_no, const string trans_string, ThreadSafeVector &t
 	int skip = 0;
 
 	// make a date string
-	time (&rawtime);
-	timeinfo = localtime (&rawtime);
-	strftime(buffer,80,"%Y-%m-%d",timeinfo);
-	std::string date(buffer);				
+	// time (&rawtime);
+	// timeinfo = localtime (&rawtime);
+	// strftime(buffer,80,"%Y-%m-%d",timeinfo);
+	// std::string date(buffer);
+
+	// NEW get date from cameras table
+
+
 	// make directory if not exists
 	// string cmd = "mkdir -m 777 ./uploads/"+date;
 	string cmd = "mkdir -p -m 777 /opt/lampp/htdocs/middleware/videos/"+date;	
@@ -620,10 +624,13 @@ void getCamStatus(ThreadSafeVector &tsv) {
 
 					try{
 						// make a date string
-						time (&rawtime);
-						timeinfo = localtime (&rawtime);
-						strftime(buffer,80,"%Y-%m-%d",timeinfo);
-						std::string date(buffer);				
+						// time (&rawtime);
+						// timeinfo = localtime (&rawtime);
+						// strftime(buffer,80,"%Y-%m-%d",timeinfo);
+						// std::string date(buffer);
+
+						// NEW- get start date from cameras table
+						std::string date = res->getString("date");
 
 
 						// make directory if not exists
@@ -705,7 +712,7 @@ void getCamStatus(ThreadSafeVector &tsv) {
 							tsv.removeCamNo(cam_no);
 							vidHandle vh = {t_string, cam_no, true};
 							tsv.add(vh);
-							thread vidT(videoThread, cam_no, t_string, std::ref(tsv));
+							thread vidT(videoThread, cam_no, t_string, std::ref(tsv), date);
 							vidT.detach();
 						}
 						else if(t_type == "stop"){
