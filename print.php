@@ -99,7 +99,7 @@ if ((isset($_GET['trans_id']))&&($p)) {
 	$printer -> text("MHKS Fuel Retail\n");
 	$printer -> selectPrintMode();
 	//$printer -> text("MHKS Mohamed Ali Petrol Division\n");
-	$printer -> text("NH48, Nagpur Jabalpur Highway, Tekadi\n");
+	$printer -> text("NH44, Nagpur Jabalpur Highway, Tekadi\n");
 	$printer -> text("VAT : 27140177250V    GST : 27ADMPA5998E1Z8\n");
 	$printer -> text("Contact : +91 8390281433");	
 	$printer -> feed();	

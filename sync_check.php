@@ -259,7 +259,7 @@ function downloadTable($table_name, $last_updated){
 	Global $local_install_dir;
 	$proceed = false;
 
-	echo $target_url = url()."/mysql_uploads/".$table_name.".sql";
+	echo $target_url = url()."/mysql_uploads/".Globals::DB_PUMP_ID."/".$table_name.".sql";
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $target_url);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -284,7 +284,7 @@ function downloadTable($table_name, $last_updated){
 		//echo "PROCEED";
 		try {
 
-			$destination = $local_install_dir."/mysql_uploads/".Globals::DB_PUMP_ID."/".$table_name.".sql";
+			$destination = $local_install_dir."/mysql_uploads/".$table_name.".sql";
 
 
 			$file = fopen($destination, "w+");
