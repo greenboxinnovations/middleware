@@ -78,29 +78,30 @@ std::atomic<bool> active_transaction(0);
 
 
 // RTSP
-const string CAM1_IP = "rtsp://admin:admin123@192.168.1.221:8554/live0.264";
-const string CAM2_IP = "rtsp://admin:admin123@192.168.1.220:8554/live0.264";
-const string CAM3_IP = "rtsp://admin:admin123@192.168.1.219:8554/live0.264";
-const string CAM4_IP = "rtsp://admin:admin123@192.168.1.218:8554/live0.264";
-const string CAM5_IP = "rtsp://admin:admin123@192.168.1.217:8554/live0.264";
-const string CAM6_IP = "rtsp://admin:admin123@192.168.1.216:8554/live0.264";
+const string CAM1_IP = "rtsp://admin:admin123@192.168.1.140:8554/live0.264";
+const string CAM2_IP = "rtsp://admin:admin123@192.168.1.141:8554/live0.264";
+const string CAM3_IP = "rtsp://admin:admin123@192.168.1.142:8554/live0.264";
+const string CAM4_IP = "rtsp://admin:admin123@192.168.1.143:8554/live0.264";
+const string CAM5_IP = "rtsp://admin:admin123@192.168.1.144:8554/live0.264";
+const string CAM6_IP = "rtsp://admin:admin123@192.168.1.145:8554/live0.264";
 
-const string OH_CAM1_IP = "rtsp://admin:admin@192.168.1.229:port/cam/realmonitor?channel=1&subtype=0";
-const string OH_CAM2_IP = "rtsp://admin:admin@192.168.1.224:port/cam/realmonitor?channel=1&subtype=0";
-const string OH_CAM3_IP = "rtsp://admin:admin@192.168.1.227:port/cam/realmonitor?channel=1&subtype=0";
+const string OH_CAM1_IP = "rtsp://admin:admin123@192.168.1.148:port/cam/realmonitor?channel=1&subtype=0";
+const string OH_CAM2_IP = "rtsp://admin:admin123@192.168.1.147:port/cam/realmonitor?channel=1&subtype=0";
+const string OH_CAM3_IP = "rtsp://admin:admin123@192.168.1.146:port/cam/realmonitor?channel=1&subtype=0";
 
 
 // PING
-const string CAM1_IP_SHORT = "192.168.1.221";
-const string CAM2_IP_SHORT = "192.168.1.220";
-const string CAM3_IP_SHORT = "192.168.1.219";
-const string CAM4_IP_SHORT = "192.168.1.218";
-const string CAM5_IP_SHORT = "192.168.1.217";
-const string CAM6_IP_SHORT = "192.168.1.216";
+const string CAM1_IP_SHORT = "192.168.1.140";
+const string CAM2_IP_SHORT = "192.168.1.141";
+const string CAM3_IP_SHORT = "192.168.1.142";
+const string CAM4_IP_SHORT = "192.168.1.143";
+const string CAM5_IP_SHORT = "192.168.1.144";
+const string CAM6_IP_SHORT = "192.168.1.145";
 
-const string OH_CAM1_IP_SHORT = "192.168.1.229";
-const string OH_CAM2_IP_SHORT = "192.168.1.224";
-const string OH_CAM3_IP_SHORT = "192.168.1.227";
+// 10, 11, 12, 13
+const string OH_CAM1_IP_SHORT = "192.168.1.148";
+const string OH_CAM2_IP_SHORT = "192.168.1.147";
+const string OH_CAM3_IP_SHORT = "192.168.1.146";
 
 
 const string C3WINDOW = "FuelCam Camera Controller";
@@ -833,7 +834,7 @@ void camThread(const string IP) {
 				// std::string now = getCurrentDateTime("now");
 				// write_text_to_log_file(now + " cap.read false");	
 				std::string now = getCurrentDateTime("now");
-				write_text_to_log_file(now + "VlcCap restart");
+				write_text_to_log_file(now + "VlcCap restart " + IP);
 
 				cap.release();				
 				cap.open(IP.c_str()); //retry vlcCap open
@@ -842,7 +843,7 @@ void camThread(const string IP) {
 		catch( const std::exception &e) {
 			std::cerr << e.what();
 			std::string now = getCurrentDateTime("now");
-			write_text_to_log_file(now + " " + e.what());
+			write_text_to_log_file(now + " " + IP + " " + e.what());
 		}
 		
 		// cap >> frame;
@@ -856,15 +857,15 @@ void camThread(const string IP) {
 
 void ping_cameras() {
 
-	vector<string> ip_list = {	"192.168.1.216",
-								"192.168.1.217",
-								"192.168.1.218",
-								"192.168.1.219",
-								"192.168.1.220",
-								"192.168.1.221",
-								"192.168.1.229",
-								"192.168.1.227",
-								"192.168.1.224"
+	vector<string> ip_list = {	"192.168.1.140",
+								"192.168.1.141",
+								"192.168.1.142",
+								"192.168.1.143",
+								"192.168.1.144",
+								"192.168.1.145",
+								"192.168.1.148",
+								"192.168.1.147",
+								"192.168.1.146"
 							};
 
 	while(1){
@@ -927,6 +928,7 @@ void ping_cameras() {
 				if((ip == OH_CAM1_IP_SHORT) && (first_OH_1 == false)){
 					first_OH_1 = true;
 					displayFrameOH1 = cv::Mat::zeros(cv::Size(1920, 1090), CV_8UC3);
+					cout << "SPAWN: " << OH_CAM1_IP_SHORT << endl;
 					thread tOH1(camThread, OH_CAM1_IP);
 					tOH1.detach();
 				}
@@ -934,6 +936,7 @@ void ping_cameras() {
 				if((ip == OH_CAM2_IP_SHORT) && (first_OH_2 == false)){
 					first_OH_2 = true;
 					displayFrameOH2 = cv::Mat::zeros(cv::Size(1920, 1090), CV_8UC3);
+					cout << "SPAWN: " << OH_CAM2_IP_SHORT << endl;
 					thread tOH2(camThread, OH_CAM2_IP);
 					tOH2.detach();
 				}
@@ -941,6 +944,7 @@ void ping_cameras() {
 				if((ip == OH_CAM3_IP_SHORT) && (first_OH_3 == false)){
 					first_OH_3 = true;
 					displayFrameOH3 = cv::Mat::zeros(cv::Size(1920, 1090), CV_8UC3);
+					cout << "SPAWN: " << OH_CAM3_IP_SHORT << endl;
 					thread tOH3(camThread, OH_CAM3_IP);
 					tOH3.detach();
 				}
@@ -975,14 +979,17 @@ void ping_cameras() {
 				else if(ip == OH_CAM1_IP){
 					displayFrameOH1 = cv::Mat::zeros(cv::Size(1920, 1090), CV_8UC3);
 					first_OH_1 = false;
+					cout << "KILL: " << OH_CAM1_IP_SHORT << endl;
 				}
 				else if(ip == OH_CAM2_IP){
 					displayFrameOH2 = cv::Mat::zeros(cv::Size(1920, 1090), CV_8UC3);
 					first_OH_2 = false;
+					cout << "KILL: " << OH_CAM2_IP_SHORT << endl;
 				}
 				else if(ip == OH_CAM3_IP){
 					displayFrameOH3 = cv::Mat::zeros(cv::Size(1920, 1090), CV_8UC3);
 					first_OH_3 = false;
+					cout << "KILL: " << OH_CAM3_IP_SHORT << endl;
 				}
 			}
 		}
@@ -1019,7 +1026,8 @@ int main(int argc, char** argv) {
 	cout << "ESC on window to exit" << endl;
 	
 	namedWindow(C3WINDOW,WINDOW_NORMAL);	
-	cv::resizeWindow(C3WINDOW, 1920, 1080);
+	cv::resizeWindow(C3WINDOW, 640, 480);
+	// cv::resizeWindow(C3WINDOW, 1920, 1080);
 
 	//1920 1090
 	//480  960

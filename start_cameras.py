@@ -106,7 +106,7 @@ def kill_program_from_out():
 
 
 def check_router():
-    ipaddress = "192.168.1.2"    
+    ipaddress = "192.168.1.1"    
     proc = subprocess.Popen(
         ['ping', '-c', '1', ipaddress],
         stdout=subprocess.PIPE)

@@ -96,12 +96,12 @@ if ((isset($_GET['trans_id']))&&($p)) {
 
 	/* Name of shop */
 	$printer -> selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
-	$printer -> text("Mulla Hussain Ali K.S. Mohamed Ali\n");
+	$printer -> text("MHKS Fuel Retail\n");
 	$printer -> selectPrintMode();
-	$printer -> text("MHKS Mohamed Ali Petrol Division\n");
-	$printer -> text("Opp Radio Station, Kamptee Rd, Nagpur\n");
-	$printer -> text("VAT : 27390041395V    GST : 27AAHFM5965H1ZV\n");
-	$printer -> text("Contact : +91 7447474279");	
+	//$printer -> text("MHKS Mohamed Ali Petrol Division\n");
+	$printer -> text("NH48, Nagpur Jabalpur Highway, Tekadi\n");
+	$printer -> text("VAT : 27140177250V    GST : 27ADMPA5998E1Z8\n");
+	$printer -> text("Contact : +91 8390281433");	
 	$printer -> feed();	
 	$printer -> feed();		
 	$printer -> setJustification(Printer::JUSTIFY_LEFT);
