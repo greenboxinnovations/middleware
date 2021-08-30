@@ -3,3 +3,7 @@
 *.mp4
 api/classes/globals.class.php
 vendor/
+print.php
+cpp/camera_controller.cpp
+cpp/camera_controller
+reprint.php
