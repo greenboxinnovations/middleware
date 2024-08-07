@@ -67,7 +67,7 @@ function queryServer(){
 		try {
 			$output = json_decode($result, true);
 			// echo '<pre>';
-			//echo $result;
+			// echo $result;
 			// echo '</pre>';
 
 			foreach ($output as $key => $value) {
@@ -253,6 +253,40 @@ function uploadRates(){
 	curl_close($ch);
 }
 
+// Function to skip the first line of a file and write the rest to a new file
+function excludeFirstLineToFile($inputFile, $outputFile) {
+    // Open the input file for reading
+    $file = fopen($inputFile, "r");
+
+    if ($file) {
+        // Read the first line and discard it
+        $firstLine = fgets($file);
+
+        // Read the rest of the file
+        $content = "";
+        while (!feof($file)) {
+            $content .= fgets($file);
+        }
+
+        // Close the input file
+        fclose($file);
+
+        // Open the output file for writing
+        $output = fopen($outputFile, "w");
+
+        // Write the content (excluding the first line) to the output file
+        fwrite($output, $content);
+
+        // Close the output file
+        fclose($output);
+
+        // echo "Content excluding first line has been written to '$outputFile'.";
+    } else {
+        echo "Error opening file: $inputFile";
+    }
+}
+
+
 function downloadTable($table_name, $last_updated){
 
 	Global $conn;
@@ -282,20 +316,21 @@ function downloadTable($table_name, $last_updated){
 
 	if($proceed){
 		//echo "PROCEED";
+		$temp = $local_install_dir."/mysql_uploads/".$table_name."_temp.sql";
+		$destination = $local_install_dir."/mysql_uploads/".$table_name.".sql";
 		try {
 
-			$destination = $local_install_dir."/mysql_uploads/".$table_name.".sql";
+
+			$file = fopen($temp, "w+");
+						fputs($file, $result);
+					fclose($file);
 
 
-			$file = fopen($destination, "w+");
-			fputs($file, $result);
-			fclose($file);
 
-			$sql = "TRUNCATE TABLE `".$table_name."` ;";
-			$exe = mysqli_query($conn, $sql);
+			excludeFirstLineToFile($temp, $destination);
 
 			// linux
-			echo exec(Globals::MYSQL_BINARY_PATH.' -u"'.Globals::DB_USER_NAME.'" --password="'.Globals::DB_PASSWORD.'"  "'.Globals::DB_NAME.'" < '.$local_install_dir.'/mysql_uploads/'.$table_name.".sql");				
+			exec(Globals::MYSQL_BINARY_PATH.' -u"'.Globals::DB_USER_NAME.'" --password="'.Globals::DB_PASSWORD.'"  "'.Globals::DB_NAME.'" < '.$local_install_dir.'/mysql_uploads/'.$table_name.".sql");				
 			// windows
 			// exec('C:/xampp/mysql/bin/mysql -u"root" --password="toor"  "pump_master" < '.$destination);
 
@@ -351,6 +386,8 @@ function sendLocalTransactions(){
 
 		$data_json = json_encode($output);
 		echo 'send transactions';
+
+		// trigger_error($output);
 
 		// send to server
 		$url = url()."/api/transactions/save_local_transactions";
